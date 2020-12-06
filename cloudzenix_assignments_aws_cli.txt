@@ -1,0 +1,76 @@
+Run instance:
+aws ec2 run-instances --image-id ami-0a91cd140a1fc148a --count 1 --instance-type t2.micro --key-name Cloudzenixkey --security-group-ids sg-0cb48d4715022d113 --subnet-id subnet-0d966b84ba2eb15a4
+
+aws ec2 run-instances --image-id ami-0a91cd140a1fc148a --count 1 --instance-type t2.micro --key-name Cloudzenixkey --security-group-ids sg-0b8b75f3acf5de808
+
+stop instance:
+aws ec2 stop-instances --instance-ids i-0698b2e69fc51b6f4
+
+terminate instance:
+aws ec2 terminate-instances --instance-ids i-0698b2e69fc51b6f4
+
+
+create security group:
+aws ec2 create-security-group --group-name my-sg-3 --description "My security group"
+
+add inbound rule:
+aws ec2 authorize-security-group-ingress --group-id sg-0fe0dd9c7ac38cd30 --protocol ssh --port 22 --cidr 0.0.0.0/0
+
+
+create vpc:
+aws ec2 create-vpc --cidr-block 10.0.0.0/16
+
+
+delete vpc:
+aws ec2 delete-vpc --vpc-id vpc-0e9e32cd971d8e764
+
+
+display instance which is running:
+aws ec2 describe-instances --filters "Name=instance-state-name,Values=running"
+
+display instance which is running and t2.micro:
+aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" "Name=instance-type,Values=t2.micro" --query "Reservations[].Instances[].InstanceId" 
+
+To terminate instance which is running and t2.micro:
+aws ec2 terminate-instances --instance-ids $(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" "Name=instance-type,Values=t2.micro" --query "Reservations[].Instances[].InstanceId" --output text)
+
+To create image of instance:
+
+aws ec2 create-image --instance-id i-0b0d5fb1bd520524f --name "my-image-02" --description "An AMI for my server"
+
+
+Load balancer:
+
+create load balancer:
+
+aws elbv2 create-load-balancer --name my-load-balancer --subnets subnet-95cfcaef subnet-d4b679bf subnet-faf994b6 --security-groups sg-0b7fac4afc9f1b80d
+
+create target group:
+aws elbv2 create-target-group --name my-targets --protocol HTTP --port 80 --target-type instance --vpc-id vpc-8ce740e7
+
+
+register target:
+aws elbv2 register-targets --target-group-arn arn:aws:elasticloadbalancing:us-east-2:839403454599:targetgroup/my-targets/2879e7eac52eb3b3 --targets Id=i-0a0ad40aa003c7a02
+ 
+ 
+create listeners:
+aws elbv2 create-listener --load-balancer-arn arn:aws:elasticloadbalancing:us-east-2:839403454599:loadbalancer/app/my-load-balancer/a086ee856a03f241 --protocol HTTP --port 80 --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-2:839403454599:targetgroup/my-targets/2879e7eac52eb3b3
+
+
+--------------------------------------
+icmp ping from mumbai to usa west 1:
+64 bytes from 54.183.103.226: icmp_seq=157 ttl=37 time=233 ms
+64 bytes from 54.183.103.226: icmp_seq=158 ttl=37 time=233 ms
+64 bytes from 54.183.103.226: icmp_seq=159 ttl=37 time=233 ms
+64 bytes from 54.183.103.226: icmp_seq=160 ttl=37 time=233 ms
+
+icmp ping from instances in same region:
+64 bytes from 13.52.103.56: icmp_seq=2 ttl=63 time=0.548 ms
+64 bytes from 13.52.103.56: icmp_seq=3 ttl=63 time=0.453 ms
+64 bytes from 13.52.103.56: icmp_seq=4 ttl=63 time=0.449 ms
+
+
+
+
+
+
